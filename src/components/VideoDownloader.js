@@ -11,7 +11,7 @@ const VideoDownloader = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await axios.post("downloader-backend.railway.internal/api/video", {
+      const response = await axios.post("http://downloader-backend-production.up.railway.app/api/video", {
         url,
       });
       setVideoData(response.data);
@@ -22,7 +22,7 @@ const VideoDownloader = () => {
   };
 
   const handleDownload = (format) => {
-    const downloadUrl = `downloader-backend.railway.internal/api/video", {
+    const downloadUrl = `http://downloader-backend-production.up.railway.app/api/video", {
         url,/api/download?url=${encodeURIComponent(
       url
     )}&itag=${format.itag}`;
