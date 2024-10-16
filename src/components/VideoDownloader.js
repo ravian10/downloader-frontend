@@ -11,7 +11,7 @@ const VideoDownloader = () => {
     e.preventDefault();
     setError("");
     try {
-      const response = await axios.post("http://localhost:5000/api/video", {
+      const response = await axios.post("downloader-backend.railway.internal/api/video", {
         url,
       });
       setVideoData(response.data);
@@ -22,7 +22,8 @@ const VideoDownloader = () => {
   };
 
   const handleDownload = (format) => {
-    const downloadUrl = `http://localhost:5000/api/download?url=${encodeURIComponent(
+    const downloadUrl = `downloader-backend.railway.internal/api/video", {
+        url,/api/download?url=${encodeURIComponent(
       url
     )}&itag=${format.itag}`;
     window.location.href = downloadUrl;
