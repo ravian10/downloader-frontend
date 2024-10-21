@@ -4,62 +4,61 @@ import "./VideoDownloader.css";
 
 const VideoDownloader = () => {
   const [url, setUrl] = useState("");
-  const [videoData, setVideoData] = useState(null);
+  const [videoDetails, setVideoDetails] = useState(null);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchVideo = async () => {
     setError("");
     try {
       const response = await axios.post("http://downloader-backend-production.up.railway.app/api/video", {
         url,
       });
-      setVideoData(response.data);
+      setVideoDetails(response.data);
     } catch (err) {
       setError("Failed to fetch video. Please enter a valid YouTube URL.");
-      setVideoData(null);
     }
   };
 
-  const handleDownload = (format) => {
-    const downloadUrl = `http://downloader-backend-production.up.railway.app/api/video", {
-        url,/api/download?url=${encodeURIComponent(
+  const downloadVideo = (itag) => {
+    const downloadUrl = `http://downloader-backend-production.up.railway.app/api/download?url=${encodeURIComponent(
       url
-    )}&itag=${format.itag}`;
-    window.location.href = downloadUrl;
+    )}&itag=${itag}`;
+
+    // Create a hidden anchor element to trigger the download without opening a new tab
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = true;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a); // Remove the anchor after triggering the download
   };
 
   return (
-    <div className="video-downloader">
-      <h1>YouTube Video Downloader</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Enter YouTube video URL"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          required
-        />
-        <button type="submit">Fetch Video</button>
-      </form>
+    <div>
+      <h2>YouTube Video Downloader</h2>
+      <input
+        type="text"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        placeholder="Enter YouTube URL"
+      />
+      <button onClick={fetchVideo}>Fetch Video</button>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {videoData && (
-        <div className="video-details">
-          <div className="thumbnail">
-            <img src={videoData.thumbnail} alt={videoData.title} />
-          </div>
-          <div className="formats">
-            <h2>{videoData.title}</h2>
-            {videoData.formats.map((format) => (
-              <div key={format.itag}>
-                <button onClick={() => handleDownload(format)}>
-                  Download {format.quality}
+      {videoDetails && (
+        <div>
+          <img src={videoDetails.thumbnail} alt="Video thumbnail" />
+          <h3>{videoDetails.title}</h3>
+          <ul>
+            {videoDetails.formats.map((format, index) => (
+              <li key={index}>
+                <button onClick={() => downloadVideo(format.itag)}>
+                  Download {format.quality} ({format.type})
                 </button>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
     </div>
